@@ -1,26 +1,44 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Login from "./components/Login";
+import Home from "./components/Home";
+import AppContext from "./Context/context";
+import Register from "./components/Register";
+import FavoriteTasks from "./components/FavoriteTasks";
+import PrivateRoutes from "./components/ProtectedRoute";
+import { useState } from "react";
+type favoriteTaskObj = {
+  id: number;
+  task: string;
+  isComplete: string;
+};
+const App = () => {
+  const [theme, setThemeFunc] = useState(false);
+  const [favoriteTasksList, setFavoriteTasks] = useState<favoriteTaskObj[]>([]);
 
-function App() {
+  const chnageTheme = () => {
+    setThemeFunc(!theme);
+  };
+  //
+
+  const chageFavoriteTaskList = (data: favoriteTaskObj[]) => {
+    setFavoriteTasks((prevState) => [...favoriteTasksList, ...data]);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AppContext.Provider
+      value={{ theme, favoriteTasksList, chageFavoriteTaskList, chnageTheme }}
+    >
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route element={<PrivateRoutes />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/favorite" element={<FavoriteTasks />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AppContext.Provider>
   );
-}
-
+};
 export default App;
